@@ -1,0 +1,5 @@
+# Python 3.8+
+news-please
+feedparser
+tqdm
+requests

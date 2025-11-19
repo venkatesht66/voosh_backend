@@ -1,14 +1,23 @@
 import { createClient } from "redis";
+import Redis from "ioredis";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const client = createClient({
-  socket: {
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT
-  }
-});
+// const client = createClient({
+//   socket: {
+//     host: process.env.REDIS_HOST,
+//     port: process.env.REDIS_PORT
+//   }
+// });
+
+const redisUrl = process.env.REDIS_URL;
+
+if (!redisUrl) {
+  console.warn("⚠️ REDIS_URL is not set. Redis will not work.");
+}
+
+const client = new Redis(redisUrl);
 
 client.on("connect", () => {
   console.log("Redis client connected");

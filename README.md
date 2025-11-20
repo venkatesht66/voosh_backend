@@ -123,3 +123,30 @@ python crawl_urls.py --urls urls.txt --limit 50
 # Database Models
 	•	Session: stores sessionId, messages, createdAt, updatedAt  
 	•	Transcript: archives cleared session messages  
+
+
+
+# Caching & Performance
+
+# Redis session cache
+We use Redis to store live chat sessions for fast retrieval.  
+
+**Environment variables**
+- `SESSION_TTL_SECONDS` — Redis TTL for session keys (default `3600` seconds = 1 hour).  
+- `SESSION_MAX_MESSAGES` — max number of messages per session retained in Redis (default `200`).  
+- `SESSION_WARM_COUNT` — number of recent sessions to warm into Redis on startup (default `50`).  
+- `SESSION_WARM_INTERVAL_MIN` — periodic warmup interval in minutes (default `60`).  
+
+**How TTL and trimming works**
+- Every time we append a message to `session:<sessionId>` we:  
+  1. `rPush` the message JSON to the Redis list.  
+  2. `lTrim` to keep only the last `SESSION_MAX_MESSAGES` entries.  
+  3. `expire` the key with `SESSION_TTL_SECONDS`.  
+This keeps Redis memory bounded and ensures inactive sessions expire automatically.  
+
+**Cache warming**
+On server startup we run a warm-up routine that:  
+1. Loads the most recently updated `SESSION_WARM_COUNT` sessions from MongoDB.  
+2. For each session, if Redis does not already have the key, we push the last messages into Redis and set TTL.  
+We also run this routine periodically every `SESSION_WARM_INTERVAL_MIN` minutes (configurable).  
+

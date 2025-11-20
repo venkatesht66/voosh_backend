@@ -25,8 +25,9 @@ export const chat = async (req, res) => {
     let context = results
       .map((r, idx) => `[${idx + 1}] ${r.payload?.chunk || ""} (Source: ${r.payload?.sourceFile || "unknown"})`)
       .join("\n\n");
+      
     if (!context.trim()) {
-      context = "No relevant news articles were found in the database.";
+      context = "";
     }
 
     console.log("Generating answer...");

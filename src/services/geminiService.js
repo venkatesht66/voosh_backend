@@ -28,20 +28,20 @@ const retry = async (fn, attempts = RETRIES) => {
 
 export const generateAnswer = async (context, question) => {
   const prompt = `
-Use only the context below to answer the question:
+You are an intelligent assistant. Answer the question naturally.
+
+If there is relevant context, use it to answer the question.
+If the context is empty or irrelevant, answer based on your general knowledge, and respond naturally.
 
 Context:
-${context}
+${context || ""}
 
 Question:
 ${question}
 `;
 
   try {
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash"
-    });
-
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContentStream(prompt);
 
     let fullText = "";

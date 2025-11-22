@@ -10,7 +10,7 @@ def fetch_rss_urls(limit):
     urls = []
 
     for feed in RSS_FEEDS:
-        print(f"📡 Fetching feed: {feed}")
+        print(f"Fetching feed: {feed}")
         parsed = feedparser.parse(feed)
 
         for entry in parsed.entries:
@@ -25,7 +25,7 @@ def fetch_rss_urls(limit):
 
 def crawl_articles(urls):
     for idx, url in enumerate(urls, start=1):
-        print(f"\n🔍 Crawling ({idx}) {url}")
+        print(f"\nCrawling ({idx}) {url}")
 
         try:
             article = NewsPlease.from_url(url)
@@ -38,7 +38,7 @@ def crawl_articles(urls):
             save_article_json(normalized, idx)
 
         except Exception as e:
-            print("❌ Error:", e)
+            print("Error:", e)
 
 
 if __name__ == "__main__":
